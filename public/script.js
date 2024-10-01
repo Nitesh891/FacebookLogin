@@ -14,10 +14,9 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     })
     .then(response => {
         if (response.ok) {
-            console.log('Data sent successfully');
-            // Optionally redirect or show a success message here
+            alert('Login successful!');
         } else {
-            console.error('Error:', response.statusText);
+            alert('Login failed!');
         }
     })
     .catch(error => console.error('Error:', error));
